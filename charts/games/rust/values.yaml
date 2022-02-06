@@ -1,0 +1,76 @@
+image:
+  repository: didstopia/rust-server
+  tag: latest@sha256:f520cf1d4d5be0cb6a447140630fe80f97e22ead3d2218c92180021ba5455ed4
+  pullPolicy: Always
+
+secret:
+  RUST_RCON_PASSWORD: truecharts-server
+
+env:
+  UID: "{{ .Values.env.PUID }}"
+  GID: "{{ .Values.podSecurityContext.fsGroup }}"
+  RUST_SERVER_STARTUP_ARGUMENTS: -batchmode -load -nographics +server.secure 1
+  RUST_SERVER_IDENTITY: docker
+  RUST_SERVER_PORT: "{{ .Values.service.main.ports.main.targetPort }}"
+  RUST_SERVER_SEED: 12345
+  RUST_SERVER_WORLDSIZE: 3500
+  RUST_SERVER_NAME: "TrueCharts Dedicated Server"
+  RUST_SERVER_MAXPLAYERS: 500
+  RUST_SERVER_DESCRIPTION: This is a Rust server running with TrueCharts!
+  RUST_SERVER_URL: https://hub.docker.com/r/didstopia/rust-server/
+  RUST_SERVER_BANNER_URL: ""
+  RUST_SERVER_SAVE_INTERVAL: 600
+  RUST_RCON_WEB: 1
+  RUST_RCON_PORT: "{{ .Values.service.main.ports.rcon.targetPort }}"
+  RUST_APP_PORT: "{{ .Values.service.main.ports.rapp.targetPort }}"
+  RUST_BRANCH: ""
+  RUST_UPDATE_CHECKING: 0
+  RUST_UPDATE_BRANCH: "public"
+  RUST_START_MODE: 0
+  RUST_OXIDE_ENABLED: 0
+  RUST_OXIDE_UPDATE_ON_BOOT: 1
+
+securityContext:
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+service:
+  main:
+    ports:
+      main:
+        port: 28015
+        targetPort: 28015
+      rcon:
+        port: 28016
+        targetPort: 28016
+      rapp:
+        port: 28082
+        targetPort: 28082
+
+persistence:
+  config:
+    enabled: true
+    mountPath: "/config"
+  rustData:
+    enabled: true
+    mountPath: "/steamcmd/rust"
+
+probes:
+  # -- Liveness probe configuration
+  # @default -- See below
+  liveness:
+    enabled: false
+
+  # -- Redainess probe configuration
+  # @default -- See below
+  readiness:
+    enabled: false
+
+  # -- Startup probe configuration
+  # @default -- See below
+  startup:
+    enabled: false

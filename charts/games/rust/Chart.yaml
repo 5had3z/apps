@@ -1,0 +1,26 @@
+apiVersion: v2
+appVersion: "latest"
+dependencies:
+  - name: common
+    repository: https://truecharts.org
+    version: 8.14.4
+description: Rust dedicated gameserver
+home: https://github.com/truecharts/apps/tree/master/charts/games/rust
+# icon: https://truecharts.org/_static/img/appicons/rust-icon.png
+keywords:
+  - rust
+kubeVersion: ">=1.16.0-0"
+maintainers:
+  - email: info@truecharts.org
+    name: TrueCharts
+    url: https://truecharts.org
+name: rust
+sources:
+  - https://github.com/Didstopia/rust-server
+  - https://hub.docker.com/r/didstopia/rust-server
+version: 0.0.1
+annotations:
+  truecharts.org/catagories: |
+    - games
+  truecharts.org/SCALE-support: "true"
+  truecharts.org/grade: U

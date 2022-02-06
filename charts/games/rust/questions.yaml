@@ -1,0 +1,563 @@
+# Include{groups}
+portals:
+  web_portal:
+    protocols:
+      - "$kubernetes-resource_configmap_portal_protocol"
+    host:
+      - "$kubernetes-resource_configmap_portal_host"
+    ports:
+      - "$kubernetes-resource_configmap_portal_port"
+questions:
+  - variable: portal
+    group: "Container Image"
+    label: "Configure Portal Button"
+    schema:
+      type: dict
+      hidden: true
+      attrs:
+        - variable: enabled
+          label: "Enable"
+          description: "enable the portal button"
+          schema:
+            hidden: true
+            editable: false
+            type: boolean
+            default: true
+# Include{global}
+  - variable: controller
+    group: "Controller"
+    label: ""
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+        - variable: advanced
+          label: "Show Advanced Controller Settings"
+          schema:
+            type: boolean
+            default: false
+            show_subquestions_if: true
+            subquestions:
+              - variable: type
+                description: "Please specify type of workload to deploy"
+                label: "(Advanced) Controller Type"
+                schema:
+                  type: string
+                  default: "deployment"
+                  required: true
+                  enum:
+                    - value: "deployment"
+                      description: "Deployment"
+                    - value: "statefulset"
+                      description: "Statefulset"
+                    - value: "daemonset"
+                      description: "Daemonset"
+              - variable: replicas
+                description: "Number of desired pod replicas"
+                label: "Desired Replicas"
+                schema:
+                  type: int
+                  default: 1
+                  required: true
+              - variable: strategy
+                description: "Please specify type of workload to deploy"
+                label: "(Advanced) Update Strategy"
+                schema:
+                  type: string
+                  default: "Recreate"
+                  required: true
+                  enum:
+                    - value: "Recreate"
+                      description: "Recreate: Kill existing pods before creating new ones"
+                    - value: "RollingUpdate"
+                      description: "RollingUpdate: Create new pods and then kill old ones"
+                    - value: "OnDelete"
+                      description: "(Legacy) OnDelete: ignore .spec.template changes"
+# Include{controllerExpert}
+  - variable: secret
+    group: "Container Configuration"
+    label: "Image Secrets"
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+        - variable: RUST_RCON_PASSWORD
+          label: "RCON Password"
+          description: "Please change this!"
+          schema:
+            type: string
+            required: true
+            private: true
+            default: "truecharts-server"
+  - variable: env
+    group: "Container Configuration"
+    label: "Image Environment"
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+# Include{fixedEnv}
+        - variable: RUST_SERVER_STARTUP_ARGUMENTS
+          label: "Server Args"
+          description: "Rust Server Startup Args"
+          schema:
+            type: string
+            default: "-batchmode -load -nographics +server.secure 1"
+        - variable: RUST_SERVER_IDENTITY
+          label: "Server Identity"
+          description: "Mainly used for the name of the save directory"
+          schema:
+            type: string
+            default: "docker"
+        - variable: RUST_SERVER_PORT
+          label: "Game Server Port"
+          description: "Rust server port"
+          schema:
+            type: int
+            default: 28015
+        - variable: RUST_SERVER_SEED
+          label: "Server Seed"
+          description: "The server map seed"
+          schema:
+            type: int
+            default: 12345
+        - variable: RUST_SERVER_WORLDSIZE
+          label: "World Size"
+          description: "The map size"
+          schema:
+            type: int
+            default: 3500
+        - variable: RUST_SERVER_NAME
+          label: "Server Name"
+          description: "The publicly visible server name"
+          schema:
+            type: string
+            default: "TrueCharts Dedicated Server"
+        - variable: RUST_SERVER_MAXPLAYERS
+          label: "Maxmimum Players"
+          description: "Maximum players on the server"
+          schema:
+            type: int
+            default: 100
+        - variable: RUST_SERVER_DESCRIPTION
+          label: "Server Description"
+          description: "The publicly visible server description"
+          schema:
+            type: string
+            default: "Rust Server Running with TrueCharts"
+        - variable: RUST_SERVER_URL
+          label: "Server Website"
+          description: "The publicly visible server website"
+          schema:
+            type: string
+            default: "https://hub.docker.com/r/didstopia/rust-server"
+        - variable: RUST_SERVER_BANNER_URL
+          label: "Server Banner URL"
+          description: "The publicly visible server banner image URL"
+          schema:
+            type: string
+            default: ""
+        - variable: RUST_SERVER_SAVE_INTERVAL
+          label: "Save Interval"
+          description: "Amount of seconds between automatic saves"
+          schema:
+            type: int
+            default: 600
+        - variable: RUST_RCON_WEB
+          label: "Enable RCON Web Interface"
+          description: "Set to 1 or 0 to enable or disable the web-based RCON server"
+          schema:
+            type: int
+            default: 1
+        - variable: RUST_RCON_PORT
+          label: "RCON Web Port"
+          description: "RCON server port"
+          schema:
+            type: int
+            default: 28016
+        - variable: RUST_APP_PORT
+          label: "Rust+ App Port"
+          description: "Rust+ companion app port"
+          schema:
+            type: int
+            default: 28082
+        - variable: RUST_BRANCH
+          label: "Rust Branch"
+          description: 'Sets the branch argument to use, eg. set to "-beta prerelease" for the prerelease branch'
+          schema:
+            type: str
+            default: ""
+        - variable: RUST_UPDATE_CHECKING
+          label: "Automatic Updates"
+          description: "Set to 1 to enable fully automatic update checking, notifying players and restarting to install updates"
+          schema:
+            type: int
+            default: 0
+        - variable: RUST_UPDATE_BRANCH
+          label: "Rust Update Branch"
+          description: 'Set to match the branch that you want to use for updating, ie. "prerelease" or "public", but do not specify arguments like "-beta""'
+          schema:
+            type: str
+            default: "public"
+        - variable: RUST_START_MODE
+          label: "Start Mode"
+          description: "Determines if the server should update and then start (0), only update (1) or only start (2)"
+          schema:
+            type: int
+            default: 0
+        - variable: RUST_OXIDE_ENABLED
+          label: "Enable Oxide"
+          description: "Set to 1 to automatically install the latest version of Oxide"
+          schema:
+            type: int
+            default: 0
+        - variable: RUST_OXIDE_UPDATE_ON_BOOT
+          label: "Enable Oxide Automatic Update"
+          description: "Set to 0 to disable automatic update of Oxide on boot"
+          schema:
+            type: int
+            default: 1
+
+# Include{containerConfig}
+  - variable: service
+    group: "Networking and Services"
+    label: "Configure Service(s)"
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+        - variable: main
+          label: "Main Service"
+          description: "The Primary service on which the healthcheck runs, often the webUI"
+          schema:
+            additional_attrs: true
+            type: dict
+            attrs:
+# Include{serviceSelector}
+              - variable: main
+                label: "Main Server Port Configuration"
+                schema:
+                  additional_attrs: true
+                  type: dict
+                  attrs:
+                    - variable: port
+                      label: "Port"
+                      description: "This port exposes the container port on the service"
+                      schema:
+                        type: int
+                        default: 28015
+                        required: true
+                    - variable: advanced
+                      label: "Show Advanced settings"
+                      schema:
+                        type: boolean
+                        default: false
+                        show_subquestions_if: true
+                        subquestions:
+                          - variable: protocol
+                            label: "Port Type"
+                            schema:
+                              type: string
+                              default: "HTTP"
+                              enum:
+                                - value: HTTP
+                                  description: "HTTP"
+                                - value: "HTTPS"
+                                  description: "HTTPS"
+                                - value: TCP
+                                  description: "TCP"
+                                - value: "UDP"
+                                  description: "UDP"
+                          - variable: nodePort
+                            label: "Node Port (Optional)"
+                            description: "This port gets exposed to the node. Only considered when service type is NodePort, Simple or LoadBalancer"
+                            schema:
+                              type: int
+                              min: 9000
+                              max: 65535
+                          - variable: targetPort
+                            label: "Target Port"
+                            description: "The internal(!) port on the container the Application runs on"
+                            schema:
+                              type: int
+                              default: 28015
+              - variable: rcon
+                label: "RCON Server Port"
+                schema:
+                  additional_attrs: true
+                  type: dict
+                  attrs:
+                    - variable: port
+                      label: "Port"
+                      description: "This port exposes the container port on the service"
+                      schema:
+                        type: int
+                        default: 28016
+                        required: true
+                    - variable: advanced
+                      label: "Show Advanced settings"
+                      schema:
+                        type: boolean
+                        default: false
+                        show_subquestions_if: true
+                        subquestions:
+                          - variable: protocol
+                            label: "Port Type"
+                            schema:
+                              type: string
+                              default: "HTTP"
+                              enum:
+                                - value: HTTP
+                                  description: "HTTP"
+                                - value: "HTTPS"
+                                  description: "HTTPS"
+                                - value: TCP
+                                  description: "TCP"
+                                - value: "UDP"
+                                  description: "UDP"
+                          - variable: nodePort
+                            label: "Node Port (Optional)"
+                            description: "This port gets exposed to the node. Only considered when service type is NodePort, Simple or LoadBalancer"
+                            schema:
+                              type: int
+                              min: 9000
+                              max: 65535
+                          - variable: targetPort
+                            label: "Target Port"
+                            description: "The internal(!) port on the container the Application runs on"
+                            schema:
+                              type: int
+                              default: 28016
+              - variable: rapp
+                label: "Rust+ App Port"
+                schema:
+                  additional_attrs: true
+                  type: dict
+                  attrs:
+                    - variable: port
+                      label: "Port"
+                      description: "This port exposes the container port on the service"
+                      schema:
+                        type: int
+                        default: 28082
+                        required: true
+                    - variable: advanced
+                      label: "Show Advanced settings"
+                      schema:
+                        type: boolean
+                        default: false
+                        show_subquestions_if: true
+                        subquestions:
+                          - variable: protocol
+                            label: "Port Type"
+                            schema:
+                              type: string
+                              default: "HTTP"
+                              enum:
+                                - value: HTTP
+                                  description: "HTTP"
+                                - value: "HTTPS"
+                                  description: "HTTPS"
+                                - value: TCP
+                                  description: "TCP"
+                                - value: "UDP"
+                                  description: "UDP"
+                          - variable: nodePort
+                            label: "Node Port (Optional)"
+                            description: "This port gets exposed to the node. Only considered when service type is NodePort, Simple or LoadBalancer"
+                            schema:
+                              type: int
+                              min: 9000
+                              max: 65535
+                          - variable: targetPort
+                            label: "Target Port"
+                            description: "The internal(!) port on the container the Application runs on"
+                            schema:
+                              type: int
+                              default: 28082
+
+  - variable: serviceexpert
+    group: "Networking and Services"
+    label: "Show Expert Config"
+    schema:
+      type: boolean
+      default: false
+      show_subquestions_if: true
+      subquestions:
+        - variable: hostNetwork
+          group: "Networking and Services"
+          label: "Host-Networking (Complicated)"
+          schema:
+            type: boolean
+            default: false
+
+# Include{serviceExpert}
+
+# Include{serviceList}
+
+  - variable: persistence
+    label: "Integrated Persistent Storage"
+    description: "Integrated Persistent Storage"
+    group: "Storage and Persistence"
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+        - variable: config
+          label: "App Config Storage"
+          description: "Stores the Application Configuration."
+          schema:
+            additional_attrs: true
+            type: dict
+            attrs:
+              - variable: type
+                label: "Type of Storage"
+                description: "Sets the persistence type, Anything other than PVC could break rollback!"
+                schema:
+                  type: string
+                  default: "simplePVC"
+                  enum:
+                    - value: "simplePVC"
+                      description: "PVC (simple)"
+                    - value: "simpleHP"
+                      description: "HostPath (simple)"
+                    - value: "emptyDir"
+                      description: "emptyDir"
+                    - value: "pvc"
+                      description: "pvc"
+                    - value: "hostPath"
+                      description: "hostPath"
+# Include{persistenceBasic}
+              - variable: hostPath
+                label: "hostPath"
+                description: "Path inside the container the storage is mounted"
+                schema:
+                  show_if: [["type", "=", "hostPath"]]
+                  type: hostpath
+              - variable: medium
+                label: "EmptyDir Medium"
+                schema:
+                  show_if: [["type", "=", "emptyDir"]]
+                  type: string
+                  default: ""
+                  enum:
+                    - value: ""
+                      description: "Default"
+                    - value: "Memory"
+                      description: "Memory"
+# Include{persistenceAdvanced}
+        - variable: rustData
+          label: "Rust Storage"
+          description: "Stores the Rust Server Data."
+          schema:
+            additional_attrs: true
+            type: dict
+            attrs:
+              - variable: type
+                label: "Type of Storage"
+                description: "Sets the persistence type, Anything other than PVC could break rollback!"
+                schema:
+                  type: string
+                  default: "simplePVC"
+                  enum:
+                    - value: "simplePVC"
+                      description: "PVC (simple)"
+                    - value: "simpleHP"
+                      description: "HostPath (simple)"
+                    - value: "emptyDir"
+                      description: "emptyDir"
+                    - value: "pvc"
+                      description: "pvc"
+                    - value: "hostPath"
+                      description: "hostPath"
+# Include{persistenceBasic}
+              - variable: hostPath
+                label: "hostPath"
+                description: "Path inside the container the storage is mounted"
+                schema:
+                  show_if: [["type", "=", "hostPath"]]
+                  type: hostpath
+              - variable: medium
+                label: "EmptyDir Medium"
+                schema:
+                  show_if: [["type", "=", "emptyDir"]]
+                  type: string
+                  default: ""
+                  enum:
+                    - value: ""
+                      description: "Default"
+                    - value: "Memory"
+                      description: "Memory"
+# Include{persistenceAdvanced}
+# Include{persistenceList}
+
+# Include{ingressList}
+
+  - variable: advancedSecurity
+    label: "Show Advanced Security Settings"
+    group: "Security and Permissions"
+    schema:
+      type: boolean
+      default: false
+      show_subquestions_if: true
+      subquestions:
+        - variable: securityContext
+          label: "Security Context"
+          schema:
+            additional_attrs: true
+            type: dict
+            attrs:
+              - variable: privileged
+                label: "Privileged mode"
+                schema:
+                  type: boolean
+                  default: false
+              - variable: readOnlyRootFilesystem
+                label: "ReadOnly Root Filesystem"
+                schema:
+                  type: boolean
+                  default: false
+              - variable: allowPrivilegeEscalation
+                label: "Allow Privilege Escalation"
+                schema:
+                  type: boolean
+                  default: false
+              - variable: runAsNonRoot
+                label: "runAsNonRoot"
+                schema:
+                  type: boolean
+                  default: false
+  # Include{securityContextAdvanced}
+
+  - variable: podSecurityContext
+    group: "Security and Permissions"
+    label: "Pod Security Context"
+    schema:
+      additional_attrs: true
+      type: dict
+      attrs:
+        - variable: runAsUser
+          label: "runAsUser"
+          description: "The UserID of the user running the application"
+          schema:
+            type: int
+            default: 568
+        - variable: runAsGroup
+          label: "runAsGroup"
+          description: The groupID this App of the user running the application"
+          schema:
+            type: int
+            default: 568
+        - variable: fsGroup
+          label: "fsGroup"
+          description: "The group that should own ALL storage."
+          schema:
+            type: int
+            default: 568
+# Include{podSecurityContextAdvanced}
+
+# Include{resources}
+
+# Include{advanced}
+
+# Include{addons}
